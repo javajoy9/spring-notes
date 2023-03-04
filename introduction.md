@@ -43,20 +43,21 @@ Authentication is the process of verifying that an individual, entity or website
 
 Now-a-days most applications and services offer multi-factor authentication, a combination of knowledge-based and possession-based authentication.
 
-![Authentication](images/AuthConfigFlow.png)
 
 ### Authorization 
 Authorization may be defined as the process of verifying that a requested action or service is approved for a specific/principal. It is the second stage of access control, following authentication, which verifies the identity of the user or entity requesting access.
 
 ## Introduction to Spring Security
 
-![SpringWithSecurity](images/SpringMVCFlowWSecurity.png)
+![Authentication](images/AuthConfigFlow.png)
 
 Spring Security works by providing a set of security filters that are applied to incoming requests to your application. These filters intercept the requests and perform various security checks and operations, such as verifying the user's identity, checking their permissions and roles, and managing user sessions.
 
 Here's a high-level overview of how Spring Security works:
 
 1. Intercepting incoming requests: When a request is made to your application, it is intercepted by a set of Spring Security filters.
+
+![SpringWithSecurity](images/SpringMVCFlowWSecurity.png)
 
 2. Authentication: The first step in the security process is authentication, which verifies the user's identity by checking their credentials against a stored database or external authentication provider.
 
@@ -177,4 +178,4 @@ In Spring Security, the default AuthenticationManager is an instance of *Provide
 
 The *ProviderManager* delegates authentication to a list of AuthenticationProvider instances. When an Authentication object is passed to the authenticate method of the AuthenticationManager, the *ProviderManager* will iterate through its list of AuthenticationProvider instances until one of them is able to authenticate the user. If no AuthenticationProvider can authenticate the user, an exception will be thrown.
 
-The default AuthenticationManager is created automatically by Spring Security and is typically used when no custom authentication provider or AuthenticationManager implementation is specified.
+The default AuthenticationManager is created automatically by Spring Security and is typically used when no custom authentication provider or AuthenticationManager implementation is specified. 

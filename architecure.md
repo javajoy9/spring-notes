@@ -23,9 +23,10 @@ The default AuthenticationManager is created automatically by Spring Security an
 
 By default, the ProviderManager uses three built-in authentication providers:
 
-DaoAuthenticationProvider: Authenticates users against a user database or other persistent storage.
-AnonymousAuthenticationProvider: Provides anonymous authentication for unauthenticated users.
-RememberMeAuthenticationProvider: Authenticates users based on a previously stored remember-me token.
+1. DaoAuthenticationProvider: Authenticates users against a user database or other persistent storage.
+2. AnonymousAuthenticationProvider: Provides anonymous authentication for unauthenticated users.
+3. RememberMeAuthenticationProvider: Authenticates users based on a previously stored remember-me token.
+
 Developers can customize the default AuthenticationManager by adding or removing authentication providers, or by creating their own custom authentication providers. This allows developers to implement custom authentication mechanisms or integrate with external authentication systems.
 
 Overall, the default AuthenticationManager in Spring Security provides a flexible and extensible way to authenticate users using a variety of authentication providers.
