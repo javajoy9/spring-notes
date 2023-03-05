@@ -121,7 +121,10 @@ Create a security configuration class and annotate it with *@EnableWebSecurity* 
 ```java
 
 @EnableWebSecurity
-@Configuration
+@Configurationpragra123
+pragra11
+
+pragraa11
 public class SecurityConfig {
 	...
 }
