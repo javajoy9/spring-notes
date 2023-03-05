@@ -69,6 +69,30 @@ The following is a simplified view of Spring Security work flow:
 
 ![Flow](images/SpringSecurityFlow.png)
 
+
+### Authentication Manager
+
+In Spring Security, the default AuthenticationManager is an instance of *ProviderManager*, which is an implementation of the *AuthenticationManager* interface.
+
+The *ProviderManager* delegates authentication to a list of AuthenticationProvider instances. When an Authentication object is passed to the authenticate method of the AuthenticationManager, the *ProviderManager* will iterate through its list of AuthenticationProvider instances until one of them is able to authenticate the user. If no AuthenticationProvider can authenticate the user, an exception will be thrown.
+
+The default AuthenticationManager is created automatically by Spring Security and is typically used when no custom authentication provider or AuthenticationManager implementation is specified. 
+
+### Authentication Provider
+In Spring Security, an authentication provider is responsible for authenticating a user's credentials and providing an authentication object that represents the user's identity and authorities.
+
+Spring Security provides several authentication providers out of the box, such as:
+
+1. DaoAuthenticationProvider: This provider authenticates a user against a database of user credentials. It takes a UserDetailsService as input, which retrieves user details from a database.
+
+2. LdapAuthenticationProvider: This provider authenticates a user against an LDAP directory.
+
+3. OpenIDAuthenticationProvider: This provider authenticates a user using OpenID.
+
+In addition to these built-in authentication providers, Spring Security also allows you to create your own custom authentication providers by implementing the AuthenticationProvider interface.
+
+When a user tries to access a secured resource, Spring Security first determines which authentication provider(s) to use based on the configured authentication mechanism(s), such as form-based login or HTTP Basic authentication. The authentication provider then attempts to authenticate the user's credentials and returns an authentication object if successful. If authentication fails, an exception is thrown, and the user is redirected to the login page.
+
 ## How to use Spring Security
 
 ### Add Spring Security Dependency
@@ -122,9 +146,6 @@ Create a security configuration class and annotate it with *@EnableWebSecurity* 
 
 @EnableWebSecurity
 @Configurationpragra123
-pragra11
-
-pragraa11
 public class SecurityConfig {
 	...
 }
@@ -149,7 +170,23 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
 ```
 
-### In-memory Authentication
+### Basic Authentication
+
+Basic Authentication is a simple way to authenticate users using a username and password. It works by sending the user's credentials (username and password) in the HTTP request header using Base64 encoding. The server then decodes the credentials, verifies them, and either grants or denies access to the requested resource.
+
+```java
+@Bean
+public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    http.authorizeHttpRequests()
+        anyRequest().authenticated()
+        .and()
+        .httpBasic();
+
+    return http.build();
+}
+```
+
+### Storing Credentials In-Memory
 
 In-memory authentication is a method of authentication provided by Spring Security that stores user credentials in memory rather than in a database. With in-memory authentication, user information such as usernames, passwords, and roles are stored in an in-memory data structure such as a hash map or a list.
 
@@ -175,10 +212,141 @@ public PasswordEncoder passwordEncoder() {
 }
 ```
 
-### Authentication Manager
+### Storing Credentials in JDBC
 
-In Spring Security, the default AuthenticationManager is an instance of *ProviderManager*, which is an implementation of the *AuthenticationManager* interface.
+In Spring Security, storing user credentials in a JDBC database is a common approach for authentication. This involves storing user details, including their username and password, in a database table and configuring Spring Security to use the database for authentication.
 
-The *ProviderManager* delegates authentication to a list of AuthenticationProvider instances. When an Authentication object is passed to the authenticate method of the AuthenticationManager, the *ProviderManager* will iterate through its list of AuthenticationProvider instances until one of them is able to authenticate the user. If no AuthenticationProvider can authenticate the user, an exception will be thrown.
+To store user credentials in a JDBC database, you need to perform the following steps:
 
-The default AuthenticationManager is created automatically by Spring Security and is typically used when no custom authentication provider or AuthenticationManager implementation is specified. 
+1. Register the DataSource.
+2. Implement the *UserDetailsService* interface to load user details from the database.
+3. Configure Spring Security to use the *UserDetailsService* to authenticate users.
+
+```java
+@Bean
+public DataSource dataSource(){
+    return new EmbeddedDatabaseBuilder()
+        .setType(EmbeddedDatabaseType.H2)
+        .addScript(JdbcDaoImpl.DEFAULT_USER_SCHEMA_DDL_LOCATION)
+        .build();
+}
+
+@Bean
+public UserDetailsService userDetailsService(DataSource dataSource){
+
+    UserDetails user1 = User.withUsername("user1")
+        .password(passwordEncoder().encode("password1"))
+        .roles("ADMIN")
+        .build();
+    UserDetails user2 = User.withUsername("user2")
+        .password(passwordEncoder().encode("password2"))
+        .roles("USER")
+        .build();
+    JdbcUserDetailsManager jdbcUserDetailsManager = new JdbcUserDetailsManager(dataSource);
+    jdbcUserDetailsManager.createUser(user1);
+    jdbcUserDetailsManager.createUser(user2);
+
+    return jdbcUserDetailsManager;
+}   
+```
+
+### JWT Authentication with OAuth2 Resource Server
+
+OAuth2 is a protocol used for authorization and authentication in web applications. It allows a user to grant a third-party application access to their resources without sharing their credentials. A resource server is a server that provides access to protected resources based on access tokens.
+
+JWTs can be used as access tokens in OAuth2. The OAuth2 provider generates a JWT that represents the user's authentication and authorization details. This JWT is then used by the resource server to authorize requests.
+
+Here is how JWT Authentication with OAuth2 Resource Server works:
+
+1. The user authenticates with an OAuth2 provider and receives a JWT access token.
+2. The user sends the access token with each request to the resource server.
+3. The resource server validates the access token by verifying the JWT signature, expiration time, and any other claims.
+4. If the access token is valid, the resource server grants access to the requested resources.
+
+#### Configuring JWT encoder and decoder
+
+```java
+@Bean
+public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
+    // filters...
+
+    http.sessionManagement(
+            session ->
+                    session.sessionCreationPolicy(
+                            SessionCreationPolicy.STATELESS)
+    );
+    http.csrf().disable();
+    http.httpBasic();
+    http.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
+   // fileters...
+} 
+//Step 1: Create Key Pair
+@Bean
+public KeyPair keyPair() throws NoSuchAlgorithmException {
+    KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
+    generator.initialize(2048);
+    return generator.generateKeyPair();
+}
+
+//Step 2: Generate RSA Key with KeyPair
+@Bean
+public RSAKey rsaKey(KeyPair keyPair) throws NoSuchAlgorithmException {
+    return new RSAKey.Builder((RSAPublicKey) keyPair.getPublic())
+            .privateKey(keyPair().getPrivate())
+            .keyID(UUID.randomUUID().toString())
+            .build();
+}
+
+//Step 3: Create JWK Source(JSON Web Key Source)
+@Bean
+public JWKSource<SecurityContext> jwkSource(RSAKey rsaKey){
+    JWKSet jwkSet = new JWKSet(rsaKey);
+    return (jwkSelector, context) -> jwkSelector.select(jwkSet);
+}
+
+//Step 4: Use RSA Public Key for decoding
+@Bean
+public JwtDecoder jwtDecoder(RSAKey rsaKey) throws JOSEException {
+    return NimbusJwtDecoder.withPublicKey(rsaKey.toRSAPublicKey())
+            .build();
+}
+
+//Step 5: Use JWK source for encoding
+@Bean
+public JwtEncoder jwtEncoder(JWKSource jwkSource){
+    return new NimbusJwtEncoder(jwkSource);
+}
+```
+
+
+
+--------
+1. Create Key Pair
+2. Create RSA Key Object with Key Pair
+3. Create JWK Source(JSON Web Key Source)
+4. Use RSA Public Key for decoding
+5. Use JWK source for encoding
+
+
+
+## Appendix
+
+### JWT
+JWT stands for JSON Web Token, which is a compact and self-contained way of transmitting information between parties in JSON format. JWTs are often used for authentication and authorization purposes in web applications and APIs.
+
+### Key Pair
+A key pair is a set of two related cryptographic keys, consisting of a public key and a private key, that are used for secure communication over an insecure network.
+
+The public key is shared openly and can be used by anyone to encrypt data that can only be decrypted by the owner of the corresponding private key. The private key, on the other hand, is kept secret and is used to decrypt data that has been encrypted using the corresponding public key.
+
+### RSA Key Object
+
+RSA (Rivest-Shamir-Adleman) is a widely used public-key cryptography algorithm that can be used for encryption, digital signatures, and key exchange. An RSA key object is a data structure that contains the parameters and values necessary for RSA encryption or decryption.
+
+### JWK Source
+
+*JwkSource* is an interface in the Spring Security OAuth2 framework that defines a strategy for loading JSON Web Key (JWK) Sets used for validating JSON Web Tokens (JWTs).
+
+#### JWK Set
+A JSON Web Key (JWK) Set is a JSON object that represents a set of JWKs (JSON Web Keys). JWKs are used to represent cryptographic keys in JSON format, and can be used for various cryptographic operations, such as signing and encryption. A JWK Set is typically used to represent the public keys used to sign or encrypt JSON Web Tokens (JWTs). 
