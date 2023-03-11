@@ -270,7 +270,6 @@ Here is how JWT Authentication with OAuth2 Resource Server works:
 public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
     // filters...
-
     http.sessionManagement(
             session ->
                     session.sessionCreationPolicy(
@@ -279,8 +278,10 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http.csrf().disable();
     http.httpBasic();
     http.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
-   // fileters...
+   // filters...
+
 } 
+
 //Step 1: Create Key Pair
 @Bean
 public KeyPair keyPair() throws NoSuchAlgorithmException {
