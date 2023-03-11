@@ -256,6 +256,8 @@ OAuth2 is a protocol used for authorization and authentication in web applicatio
 
 JWTs can be used as access tokens in OAuth2. The OAuth2 provider generates a JWT that represents the user's authentication and authorization details. This JWT is then used by the resource server to authorize requests.
 
+
+
 Here is how JWT Authentication with OAuth2 Resource Server works:
 
 1. The user authenticates with an OAuth2 provider and receives a JWT access token.
@@ -319,15 +321,30 @@ public JwtEncoder jwtEncoder(JWKSource jwkSource){
     return new NimbusJwtEncoder(jwkSource);
 }
 ```
+### Oauth2 Client Login
+
+OAuth 2 is a protocol that enables secure delegated access to resources over the internet. It allows users to grant third-party applications access to their resources on a server without sharing their credentials.
+
+In Spring Security, OAuth 2 support is provided through the Spring Security OAuth project, which is an extension of Spring Security that enables developers to add OAuth 2 authentication and authorization to their applications.
+
+To use OAuth 2 with Spring Security, developers need to configure the framework to use an OAuth 2 provider, such as Google, Facebook, or GitHub. The provider will authenticate the user and issue an access token, which the user can use to access protected resources on the server.
+
+To use OAuth 2, add Oauth2 dependency:
+```java
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-oauth2-client</artifactId>
+</dependency>
+```
+
+For a very naive implementation, configure the client-id and secret application.properties.
+```
+spring.security.oauth2.client.registration.google.client-id=YOUR_CLIENT_ID
+spring.security.oauth2.client.registration.google.client-secret=YOUR_SECRET
+```
 
 
 
---------
-1. Create Key Pair
-2. Create RSA Key Object with Key Pair
-3. Create JWK Source(JSON Web Key Source)
-4. Use RSA Public Key for decoding
-5. Use JWK source for encoding
 
 
 
