@@ -218,10 +218,21 @@ In Spring Security, storing user credentials in a JDBC database is a common appr
 
 To store user credentials in a JDBC database, you need to perform the following steps:
 
-1. Register the DataSource.
-2. Implement the *UserDetailsService* interface to load user details from the database.
-3. Configure Spring Security to use the *UserDetailsService* to authenticate users.
 
+
+1. Add the JDBC and database(H2) dependencies.
+```
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-jdbc</artifactId>
+</dependency>
+<dependency>
+    <groupId>com.h2database</groupId>
+    <artifactId>h2</artifactId>
+</dependency>
+```
+
+2. Register the DataSource.
 ```java
 @Bean
 public DataSource dataSource(){
@@ -230,7 +241,10 @@ public DataSource dataSource(){
         .addScript(JdbcDaoImpl.DEFAULT_USER_SCHEMA_DDL_LOCATION)
         .build();
 }
+```
+3. Implement the *UserDetailsService* interface to load user details from the database.
 
+```java
 @Bean
 public UserDetailsService userDetailsService(DataSource dataSource){
 
@@ -256,8 +270,6 @@ OAuth2 is a protocol used for authorization and authentication in web applicatio
 
 JWTs can be used as access tokens in OAuth2. The OAuth2 provider generates a JWT that represents the user's authentication and authorization details. This JWT is then used by the resource server to authorize requests.
 
-
-
 Here is how JWT Authentication with OAuth2 Resource Server works:
 
 1. The user authenticates with an OAuth2 provider and receives a JWT access token.
@@ -265,8 +277,16 @@ Here is how JWT Authentication with OAuth2 Resource Server works:
 3. The resource server validates the access token by verifying the JWT signature, expiration time, and any other claims.
 4. If the access token is valid, the resource server grants access to the requested resources.
 
-#### Configuring JWT encoder and decoder
+To implement JWT authentication in your application, complete the following steps:
 
+1. Add the OAuth server dependency
+```
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+</dependency>
+```
+2. Add the Oauth2 Resource server filter to the filter chain in the security configuration.
 ```java
 @Bean
 public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -283,7 +303,22 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
    // filters...
 
 } 
+```
 
+3. Configure the AuthenticationManager
+```java
+@Bean
+    public AuthenticationManager authenticationManager(
+            UserDetailsService userDetailsService) {
+        var authenticationProvider = new DaoAuthenticationProvider();
+        authenticationProvider.setUserDetailsService(userDetailsService);
+        return new ProviderManager(authenticationProvider);
+    }
+```
+
+4. Configure JWT encoder and decoder
+
+```java
 //Step 1: Create Key Pair
 @Bean
 public KeyPair keyPair() throws NoSuchAlgorithmException {
@@ -321,6 +356,42 @@ public JwtEncoder jwtEncoder(JWKSource jwkSource){
     return new NimbusJwtEncoder(jwkSource);
 }
 ```
+
+5. Configure the service
+
+```java
+public String generateToken(Authentication authentication){
+        String scope = authentication.getAuthorities().stream()
+                .map(a -> a.getAuthority())
+                .collect(Collectors.joining(" "));
+        JwtClaimsSet jwtClaimsSet = JwtClaimsSet.builder()
+                .issuer("self")
+                .issuedAt(Instant.now())
+                .expiresAt(Instant.now().plusSeconds(60*5))
+                .subject(authentication.getName())
+                .claim("scope", scope)
+                .build();
+        return jwtEncoder.encode(JwtEncoderParameters.from(jwtClaimsSet)).getTokenValue();
+    }
+```
+
+6. Configure the controller
+
+```java
+ @PostMapping("/authenticate")
+    public ResponseEntity<JwtResponse> generateToken(@RequestBody JwtTokenRequest jwtTokenRequest){
+
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                jwtTokenRequest.username(), jwtTokenRequest.password());
+
+        Authentication authentication = authenticationManager.authenticate(authenticationToken);
+        String token = jwtTokenService.generateToken(authentication);
+
+        return ResponseEntity.ok(new JwtResponse(token));
+    }
+```
+JwtTokenRequest is a record with two strings: username and password. The JwtResponse is a record with just one string: message.
+
 ### Oauth2 Client Login
 
 OAuth 2 is a protocol that enables secure delegated access to resources over the internet. It allows users to grant third-party applications access to their resources on a server without sharing their credentials.
@@ -343,10 +414,10 @@ spring.security.oauth2.client.registration.google.client-id=YOUR_CLIENT_ID
 spring.security.oauth2.client.registration.google.client-secret=YOUR_SECRET
 ```
 
+Refer the OAuth 2 providers' official documentationfor guidance on how to create Client ID and secret.
+Click  [here](https://support.google.com/workspacemigrate/answer/9222992?hl=en) for google  reference.
 
-
-
-
+Note: Use http://localhost:8080/login/oauth2/code/google as Authorised redirect URIs
 
 ## Appendix
 
