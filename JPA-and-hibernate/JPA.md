@@ -128,7 +128,7 @@ public class ProductCommandLineRunner implements CommandLineRunner {
     }
 }
 ```
-Final output
+### Final output
 ![jpa-output](images/jpa-output.png)
 
 
