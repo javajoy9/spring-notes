@@ -26,7 +26,7 @@ In Spring, a bean's lifecycle consists of several stages, each with its own set 
 2. Dependency injection*: The container injects any required dependencies into the bean instance.
 
 3. Initialization*: The init method is a callback method that you can define for a bean to perform any custom initialization logic. This method is executed after the bean has been instantiated and all its dependencies have been injected, but before the bean is ready to be used.
-To define an init method for a bean, you can use the @PostConstruct annotation on a method in the bean class.
+To define an init method for a bean, you can use the `@PostConstruct` annotation on a method in the bean class.
 
 4. Destruction*: This stage occurs when the bean is no longer needed, and the container wants to dispose of the bean. The following methods are executed during this stage:
     
@@ -65,7 +65,7 @@ This approach has several benefits, including:
 
 * Better IDE support: IDEs such as Eclipse and IntelliJ IDEA provide better support for Java code than XML files.
 
-To configure a Spring application using Java-based configuration, create a class annotated with the @Configuration annotation. This class will contain one or more methods annotated with the @Bean annotation, which will define the beans that make up the application.
+To configure a Spring application using Java-based configuration, create a class annotated with the `@Configuration` annotation. This class will contain one or more methods annotated with the `@Bean` annotation, which will define the beans that make up the application.
 
 ```
 //TODO: add code sample
@@ -118,7 +118,7 @@ In this example, the `matches` method is used to check if the email address matc
 ## Profiles
 Profiles in Spring Boot provide a way to define different sets of configurations for different environments or deployment scenarios. With profiles, you can configure your application to behave differently depending on the environment it is running in, such as development, testing, staging, or production.
 
-To define a profile in Spring Boot, you can use the @Profile annotation. This annotation can be added to any bean definition, indicating that the bean should only be created when the specified profile is active. For example, suppose you have a bean called "myService" that should only be created when the "dev" profile is active. You can define the bean as follows:
+To define a profile in Spring Boot, you can use the `@Profile` annotation. This annotation can be added to any bean definition, indicating that the bean should only be created when the specified profile is active. For example, suppose you have a bean called "myService" that should only be created when the "dev" profile is active. You can define the bean as follows:
 ```java
 @Service
 @Profile("dev")
@@ -127,7 +127,7 @@ public class MyService {
 }
 ```
 
-In this example, the @Service annotation indicates that this is a service bean, and the @Profile("dev") annotation indicates that the bean should only be created when the "dev" profile is active.
+In this example, the `@Service` annotation indicates that this is a service bean, and the `@Profile("dev")` annotation indicates that the bean should only be created when the "dev" profile is active.
 
 To activate a profile in Spring Boot, you can use the spring.profiles.active property. This property can be set in a variety of ways, such as through a configuration file, a system property, or an environment variable. For example, to activate the "dev" profile, you can set the spring.profiles.active property in your application.properties file as follows:
 ```
