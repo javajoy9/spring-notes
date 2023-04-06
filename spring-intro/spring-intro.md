@@ -23,16 +23,16 @@ In Spring, a bean's lifecycle consists of several stages, each with its own set 
 
 1. Bean instantiation: This is the first stage of the bean lifecycle.bThe container creates an instance of the bean using its constructor or a factory method, depending on how the bean is defined.
 
-2. Dependency injection*: The container injects any required dependencies into the bean instance.
+2. Dependency injection: The container injects any required dependencies into the bean instance.
 
-3. Initialization*: The init method is a callback method that you can define for a bean to perform any custom initialization logic. This method is executed after the bean has been instantiated and all its dependencies have been injected, but before the bean is ready to be used.
+3. Initialization: The init method is a callback method that you can define for a bean to perform any custom initialization logic. This method is executed after the bean has been instantiated and all its dependencies have been injected, but before the bean is ready to be used.
 To define an init method for a bean, you can use the `@PostConstruct` annotation on a method in the bean class.
 
-4. Destruction*: This stage occurs when the bean is no longer needed, and the container wants to dispose of the bean. The following methods are executed during this stage:
+4. Destruction: This stage occurs when the bean is no longer needed, and the container wants to dispose of the bean. The following methods are executed during this stage:
     
-    - DisposableBean.destroy(): This method is called before the bean is destroyed, giving it an opportunity to release any resources it is holding.
+    - *DisposableBean.destroy()*: This method is called before the bean is destroyed, giving it an opportunity to release any resources it is holding.
     
-    -   Custom destroy method: You can define a custom destroy method by specifying a method name in the bean configuration.
+    - Custom destroy method: You can define a custom destroy method by specifying a method name in the bean configuration.
 
 ## Configuring Spring Application
 Spring applications can be configured using XML files, Java-based configuration, or a combination of both.
