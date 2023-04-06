@@ -5,7 +5,7 @@
 Inversion of Control is a principle in Software Engineering that transfer control of objects or portion of code to a framework or container.
 
 Spring IoC(Inversion of Control) Container is the core of Spring Framework. It takes control of the program by creating objects, managing dependencies and lifecycles.
-In traditional programming, our custom code makes calls to libraries to implement features and our code controls teh flow of the program. But with IoC, frameworks or containers call our custom code and control the flow of the program.
+In traditional programming, our custom code makes calls to libraries to implement features and our code controls the flow of the program. But with IoC, frameworks or containers call our custom code and control the flow of the program.
 
 ## Dependency Injection
 
