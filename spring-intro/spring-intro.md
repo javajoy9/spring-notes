@@ -1,5 +1,13 @@
 # Introduction to Spring
 
+## Tight Coupling
+
+Tight coupling in software modules means they are highly dependent on each other, with changes in one module potentially requiring modifications in multiple other modules. This can make the system less flexible, harder to maintain, and hinder scalability and reusability.
+
+## Loose Coupling
+
+Loose coupling in software modules means they are relatively independent and have minimal dependencies on each other. They communicate through well-defined interfaces, which allows for flexibility, easier maintenance, and promotes scalability and reusability in the software system.
+
 ## Inversion of Control
 
 Inversion of Control is a principle in Software Engineering that transfer control of objects or portion of code to a framework or container.
@@ -14,25 +22,6 @@ There are three types of Dependency Injection:
 * Constructor Injection:  The container provides the dependencies by invoking a constructor with the necessary arguments.
 * Setter Injection: The container will use setter methods of the class after invoking a no argument constructor, to instantiate the class.
 * Field Injection: The dependencies of a class are injected into its fields rather than its constructor or setter methods.
-
-## Bean Life Cycle
-
-In Spring, a bean's lifecycle consists of several stages, each with its own set of methods that can be executed. The following is a general overview of the bean lifecycle stages and the corresponding methods:
-
-![Bean Life Cycle](images/BeanLifeCycle.png)
-
-1. Bean instantiation: This is the first stage of the bean lifecycle.bThe container creates an instance of the bean using its constructor or a factory method, depending on how the bean is defined.
-
-2. Dependency injection: The container injects any required dependencies into the bean instance.
-
-3. Initialization: The init method is a callback method that you can define for a bean to perform any custom initialization logic. This method is executed after the bean has been instantiated and all its dependencies have been injected, but before the bean is ready to be used.
-To define an init method for a bean, you can use the `@PostConstruct` annotation on a method in the bean class.
-
-4. Destruction: This stage occurs when the bean is no longer needed, and the container wants to dispose of the bean. The following methods are executed during this stage:
-    
-    - *DisposableBean.destroy()*: This method is called before the bean is destroyed, giving it an opportunity to release any resources it is holding.
-    
-    - Custom destroy method: You can define a custom destroy method by specifying a method name in the bean configuration.
 
 ## Configuring Spring Application
 Spring applications can be configured using XML files, Java-based configuration, or a combination of both.
@@ -67,17 +56,7 @@ This approach has several benefits, including:
 
 To configure a Spring application using Java-based configuration, create a class annotated with the `@Configuration` annotation. This class will contain one or more methods annotated with the `@Bean` annotation, which will define the beans that make up the application.
 
-```
-//TODO: add code sample
-```
-
-## Spring Boot Auto Configuration
-
-Spring Boot is an open-source framework for building enterprise-level Java applications quickly and easily. It's built on top of Spring framework, and provides a streamlined, opinionated approach to application development, with a focus on ease of use and rapid development. Spring Boot's auto-configuration feature allows developers to easily configure their applications without having to write a lot of boilerplate code. It automatically configures many of the commonly used components, such as data sources, security, and web frameworks. Spring Boot auto-configuration works by scanning the classpath for certain libraries and components, and configuring the application based on what it finds. For example, if the classpath contains a database driver, Spring Boot will automatically configure a DataSource bean.
-
-Auto-configuration can also be customized and extended by providing custom configuration classes. These classes can be annotated with `@Configuration` and can contain `@Bean` methods that override or augment the auto-configured beans. You need to opt-in to auto-configuration by adding the `@EnableAutoConfiguration` or `@SpringBootApplication` annotations to one of your `@Configuration` classes.
-
-## Spring Expression Language (SpEL)
+### Configuration Spring Expression Language (SpEL)
 Spring Expression Language, or SpEL for short, is a powerful expression language that is used in Spring applications for configuring and manipulating objects. It provides a way to dynamically evaluate and manipulate expressions at runtime, which can be useful in a variety of contexts, such as configuration files, annotations, and data binding.
 
 SpEL supports a wide range of features, including:
@@ -115,24 +94,24 @@ In this example, the `?` and `:` characters are used to indicate the if-else log
 ```
 In this example, the `matches` method is used to check if the email address matches the specified regular expression.
 
-## Profiles
-Profiles in Spring Boot provide a way to define different sets of configurations for different environments or deployment scenarios. With profiles, you can configure your application to behave differently depending on the environment it is running in, such as development, testing, staging, or production.
+## Bean Life Cycle
 
-To define a profile in Spring Boot, you can use the `@Profile` annotation. This annotation can be added to any bean definition, indicating that the bean should only be created when the specified profile is active. For example, suppose you have a bean called "myService" that should only be created when the "dev" profile is active. You can define the bean as follows:
-```java
-@Service
-@Profile("dev")
-public class MyService {
-  // ...
-}
-```
+In Spring, a bean's lifecycle consists of several stages, each with its own set of methods that can be executed. The following is a general overview of the bean lifecycle stages and the corresponding methods:
 
-In this example, the `@Service` annotation indicates that this is a service bean, and the `@Profile("dev")` annotation indicates that the bean should only be created when the "dev" profile is active.
+![Bean Life Cycle](images/BeanLifeCycle.png)
 
-To activate a profile in Spring Boot, you can use the spring.profiles.active property. This property can be set in a variety of ways, such as through a configuration file, a system property, or an environment variable. For example, to activate the "dev" profile, you can set the spring.profiles.active property in your application.properties file as follows:
-```
-spring.profiles.active=dev
-```
+1. Bean instantiation: This is the first stage of the bean lifecycle.bThe container creates an instance of the bean using its constructor or a factory method, depending on how the bean is defined.
+
+2. Dependency injection: The container injects any required dependencies into the bean instance.
+
+3. Initialization: The init method is a callback method that you can define for a bean to perform any custom initialization logic. This method is executed after the bean has been instantiated and all its dependencies have been injected, but before the bean is ready to be used.
+To define an init method for a bean, you can use the `@PostConstruct` annotation on a method in the bean class.
+
+4. Destruction: This stage occurs when the bean is no longer needed, and the container wants to dispose of the bean. The following methods are executed during this stage:
+    
+    - *DisposableBean.destroy()*: This method is called before the bean is destroyed, giving it an opportunity to release any resources it is holding.
+    
+    - Custom destroy method: You can define a custom destroy method by specifying a method name in the bean configuration.
 
 ## Aspect Oriented Programming
 
@@ -172,3 +151,4 @@ public class LoggingAspect {
 ```
 
 In this example, the `@Aspect` annotation is used to define the LoggingAspect as an aspect. The `@Before` and `@AfterReturning` annotations are used to define advice methods that are executed before and after a method invocation, respectively. The `myServiceMethods()` pointcut is used to specify the joinpoints where the aspect should be applied.
+
