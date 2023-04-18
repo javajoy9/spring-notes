@@ -23,7 +23,7 @@ Spring Boot is built on top of Spring and includes many of the same features, bu
 
 ## Spring Boot Auto Configuration
 
-Spring Boot is an open-source framework for building enterprise-level Java applications quickly and easily. It's built on top of Spring framework, and provides a streamlined, opinionated approach to application development, with a focus on ease of use and rapid development. Spring Boot's auto-configuration feature allows developers to easily configure their applications without having to write a lot of boilerplate code. It automatically configures many of the commonly used components, such as data sources, security, and web frameworks. Spring Boot auto-configuration works by scanning the classpath for certain libraries and components, and configuring the application based on what it finds. For example, if the classpath contains a database driver, Spring Boot will automatically configure a DataSource bean.
+Spring Boot's auto-configuration feature allows developers to easily configure their applications without having to write a lot of boilerplate code. It automatically configures many of the commonly used components, such as data sources, security, and web frameworks. Spring Boot auto-configuration works by scanning the classpath for certain libraries and components, and configuring the application based on what it finds. For example, if the classpath contains a database driver, Spring Boot will automatically configure a DataSource bean.
 
 Auto-configuration can also be customized and extended by providing custom configuration classes. These classes can be annotated with `@Configuration` and can contain `@Bean` methods that override or augment the auto-configured beans. You need to opt-in to auto-configuration by adding the `@EnableAutoConfiguration` or `@SpringBootApplication` annotations to one of your `@Configuration` classes.
 
@@ -69,3 +69,43 @@ Spring Boot is built on top of the Spring framework and provides a number of cor
 * **@Profile**: This annotation is used to define profiles for different environments (such as development, production, etc.) in a Spring Boot application. Beans or configurations annotated with @Profile will be activated or deactivated based on the active profiles, allowing for different behavior in different environments.
 
 * **@Conditional**: This annotation is used to selectively enable or disable configurations or beans based on specific conditions, as discussed in the previous answer. It allows for dynamic configuration of the application based on runtime conditions or external configuration.
+
+## Aspect Oriented Programming
+
+Aspect-Oriented Programming(AOP) is a programming paradigm that allows you to modularize cross-cutting concerns in your application. In Spring, AOP is implemented using AspectJ, which provides a powerful set of tools for defining and applying aspects to your application.
+
+One of the key concepts in AOP is the notion of a pointcut, which is a set of joinpoints where you can apply an aspect. A joinpoint is a specific point in the execution of your application, such as a method invocation or a field access. By defining a pointcut, you can specify the set of joinpoints where you want to apply an aspect.
+
+In Spring, you can define a pointcut using a combination of a pointcut expression and a pointcut designator. The pointcut expression is a SpEL expression that specifies the joinpoints that match the pointcut, and the pointcut designator specifies the types of joinpoints that the pointcut applies to.
+
+For example, suppose you have a `MyService` class that contains several methods, and you want to log the entry and exit of each method. You can define a pointcut that matches all public methods of the `MyService` class, like this:
+```java
+@Pointcut("execution(public * com.example.MyService.*(..))")
+public void myServiceMethods() {}
+```
+
+In this example, the `@Pointcut` annotation is used to define a pointcut called `myServiceMethods`. The SpEL expression `execution(public * com.example.MyService.*(..))` specifies that the pointcut applies to all public methods of the `MyService` class.
+
+Once you have defined a pointcut, you can apply an aspect to it using an advice. An advice is a piece of code that is executed at a specific joinpoint, such as before or after a method invocation. In Spring, you can define an advice using an aspect, which is a class that contains one or more advice methods.
+
+For example, suppose you have a `LoggingAspect` class that contains advice methods for logging the entry and exit of methods. You can apply the `LoggingAspect` to the `myServiceMethods` pointcut, like this:
+```java
+@Aspect
+@Component
+public class LoggingAspect {
+    @Before("myServiceMethods()")
+    public void logMethodEntry(JoinPoint joinPoint) {
+        String methodName = joinPoint.getSignature().getName();
+        System.out.println("Entering " + methodName);
+    }
+
+    @After("myServiceMethods()")
+    public void logMethodExit(JoinPoint joinPoint) {
+        String methodName = joinPoint.getSignature().getName();
+        System.out.println("Exiting " + methodName);
+    }
+}
+```
+
+In this example, the `@Aspect` annotation is used to define the LoggingAspect as an aspect. The `@Before` and `@After` annotations are used to define advice methods that are executed before and after a method invocation, respectively. The `myServiceMethods()` pointcut is used to specify the joinpoints where the aspect should be applied.
+

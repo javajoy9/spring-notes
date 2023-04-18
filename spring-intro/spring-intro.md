@@ -17,11 +17,14 @@ In traditional programming, our custom code makes calls to libraries to implemen
 
 ## Dependency Injection
 
-Dependency Injection is a design pattern in Software Engineering used to implement IoC. It transfers the responsibility of creating objects to Spring Framework. DI makes the code more modular, testable, and maintainable by reducing coupling between classes and enabling easier unit testing.
+Dependency Injection is a design pattern in Software Engineering used to implement IoC. It transfers the responsibility of creating objects to Spring Framework. DI makes the code more modular, testable, and maintainable by reducing coupling between classes and enabling easier unit testing. `@Autowired` annotation is used to iject dependency in spring.
+
 There are three types of Dependency Injection:
 * Constructor Injection:  The container provides the dependencies by invoking a constructor with the necessary arguments.
 * Setter Injection: The container will use setter methods of the class after invoking a no argument constructor, to instantiate the class.
 * Field Injection: The dependencies of a class are injected into its fields rather than its constructor or setter methods.
+
+**@Qualifier**: Used to specify which bean should be injected when there are multiple beans of the same type available.
 
 ## Configuring Spring Application
 Spring applications can be configured using XML files, Java-based configuration, or a combination of both.
@@ -55,6 +58,14 @@ This approach has several benefits, including:
 * Better IDE support: IDEs such as Eclipse and IntelliJ IDEA provide better support for Java code than XML files.
 
 To configure a Spring application using Java-based configuration, create a class annotated with the `@Configuration` annotation. This class will contain one or more methods annotated with the `@Bean` annotation, which will define the beans that make up the application.
+
+**@Configuration**: The @Configuration annotation in Spring is used to mark a Java class as a configuration source for defining and configuring beans in a Spring application. It is used in conjunction with other annotations, such as @Bean, to define bean definitions, specify scopes, and control bean initialization and destruction.
+
+**@Bean**: A bean in Spring is any java object that is created, configured, and managed by the Spring container.
+
+**@Component**: Used to mark a class as a Spring-managed component, making it eligible for automatic detection and instantiation as a bean during the component scanning process
+
+**@ComponentScan**: Used to specify the packages that should be scanned for Spring-managed components during the component scanning process. It is typically used in conjunction with @Configuration to enable component scanning in a Spring application. 
 
 ### Configuration Spring Expression Language (SpEL)
 Spring Expression Language, or SpEL for short, is a powerful expression language that is used in Spring applications for configuring and manipulating objects. It provides a way to dynamically evaluate and manipulate expressions at runtime, which can be useful in a variety of contexts, such as configuration files, annotations, and data binding.
@@ -113,42 +124,6 @@ To define an init method for a bean, you can use the `@PostConstruct` annotation
     
     - Custom destroy method: You can define a custom destroy method by specifying a method name in the bean configuration.
 
-## Aspect Oriented Programming
+**@PostConstruct**: Indicates that a method should be executed after a bean has been constructed and its dependencies have been injected, but before the bean is put into service.
 
-Aspect-Oriented Programming(AOP) is a programming paradigm that allows you to modularize cross-cutting concerns in your application. In Spring, AOP is implemented using AspectJ, which provides a powerful set of tools for defining and applying aspects to your application.
-
-One of the key concepts in AOP is the notion of a pointcut, which is a set of joinpoints where you can apply an aspect. A joinpoint is a specific point in the execution of your application, such as a method invocation or a field access. By defining a pointcut, you can specify the set of joinpoints where you want to apply an aspect.
-
-In Spring, you can define a pointcut using a combination of a pointcut expression and a pointcut designator. The pointcut expression is a SpEL expression that specifies the joinpoints that match the pointcut, and the pointcut designator specifies the types of joinpoints that the pointcut applies to.
-
-For example, suppose you have a `MyService` class that contains several methods, and you want to log the entry and exit of each method. You can define a pointcut that matches all public methods of the `MyService` class, like this:
-```java
-@Pointcut("execution(public * com.example.MyService.*(..))")
-public void myServiceMethods() {}
-```
-
-In this example, the `@Pointcut` annotation is used to define a pointcut called `myServiceMethods`. The SpEL expression `execution(public * com.example.MyService.*(..))` specifies that the pointcut applies to all public methods of the `MyService` class.
-
-Once you have defined a pointcut, you can apply an aspect to it using an advice. An advice is a piece of code that is executed at a specific joinpoint, such as before or after a method invocation. In Spring, you can define an advice using an aspect, which is a class that contains one or more advice methods.
-
-For example, suppose you have a `LoggingAspect` class that contains advice methods for logging the entry and exit of methods. You can apply the `LoggingAspect` to the `myServiceMethods` pointcut, like this:
-```java
-@Aspect
-@Component
-public class LoggingAspect {
-    @Before("myServiceMethods()")
-    public void logMethodEntry(JoinPoint joinPoint) {
-        String methodName = joinPoint.getSignature().getName();
-        System.out.println("Entering " + methodName);
-    }
-
-    @AfterReturning("myServiceMethods()")
-    public void logMethodExit(JoinPoint joinPoint) {
-        String methodName = joinPoint.getSignature().getName();
-        System.out.println("Exiting " + methodName);
-    }
-}
-```
-
-In this example, the `@Aspect` annotation is used to define the LoggingAspect as an aspect. The `@Before` and `@AfterReturning` annotations are used to define advice methods that are executed before and after a method invocation, respectively. The `myServiceMethods()` pointcut is used to specify the joinpoints where the aspect should be applied.
-
+**@PreDestroy**: Indicates that a method should be executed before a bean is destroyed or removed from service.
